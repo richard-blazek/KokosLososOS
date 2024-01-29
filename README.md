@@ -1,5 +1,6 @@
 # OS
-Using x86 Intel Assembly.
+This is going to be an operating system one day, maybe.
+Written in x86 Intel assembly.
 
 ## Calling convention
 Arguments are passed on the stack in a right-to-left order and the caller
