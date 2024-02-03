@@ -22,7 +22,7 @@ header_addr:
     dd bss_end_addr       ; the end of the bss segment
     dd entry_addr         ; the address whither the bootloader jumps to start the OS
 
-include 'terminal.asm'
+include 'libraries/terminal.asm'
 
 ; Code
 entry_addr:
