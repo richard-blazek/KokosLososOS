@@ -35,6 +35,7 @@ itoa:
         mov bl, byte [edi+esi]
         mov byte [edi+eax], bl
         mov byte [edi+esi], dl
+
         inc esi
         dec eax
         jmp .itoaReverseLoop
@@ -45,7 +46,7 @@ itoa:
     pop edx
     pop ecx
     pop ebx
-    ret 8
+    ret
 
 
 _start:
@@ -54,6 +55,7 @@ _start:
     push edi
     push 123456789
     call itoa
+    add esp, 8
 
     mov edx,len     ; third argument: message length
     mov ecx,msg     ; second argument: pointer to message to write
