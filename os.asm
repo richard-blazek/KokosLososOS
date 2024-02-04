@@ -31,12 +31,12 @@ entry_addr:
     mov esp, stackbottom
     mov ebp, esp
 
-    call terminal.clear
+    macros.call terminal.clear
 
-    ccall terminal.print, msg, msglen, 0, terminal.LIGHT_GREEN, terminal.BLACK
-    ccall terminal.print, msg, msglen, 85, terminal.LIGHT_GREEN, terminal.BLACK
-    ccall terminal.print, msg, msglen, 170, terminal.LIGHT_GREEN, terminal.BLACK
-    ccall terminal.print, msg, msglen, 255, terminal.LIGHT_GREEN, terminal.BLACK
+    macros.call terminal.print, msg, msglen, 0, terminal.LIGHT_GREEN, terminal.BLACK
+    macros.call terminal.print, msg, msglen, 85, terminal.LIGHT_GREEN, terminal.BLACK
+    macros.call terminal.print, msg, msglen, 170, terminal.LIGHT_GREEN, terminal.BLACK
+    macros.call terminal.print, msg, msglen, 255, terminal.LIGHT_GREEN, terminal.BLACK
 
     hlt ; halt
 

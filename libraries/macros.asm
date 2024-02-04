@@ -2,17 +2,23 @@
 ; order and the caller is responsible for cleaning them up. Return value is
 ; stored in EAX. All general-purpose registers except EAX must be saved and
 ; preserved by the subroutine. A lot like cdecl.
-macro ccall proc*, [arg*]
-{
-    common
-        local size
-        size = 0
 
-    reverse
-        push arg
-        size = size + 4
+macro macros._reverse_push [arg*] {
+    reverse push arg
+}
 
-    common
-        call proc
+macro macros.call proc*, args& {
+    size equ 0
+
+    match any, args \{
+        macros._reverse_push args
+        irp arg, args \\{
+            size equ (size + 4)
+        \\}
+    \}
+
+    call proc
+    if size > 0
         add esp, size
+    end if
 }
