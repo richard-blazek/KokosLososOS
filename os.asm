@@ -22,23 +22,21 @@ header_addr:
     dd bss_end_addr       ; the end of the bss segment
     dd entry_addr         ; the address whither the bootloader jumps to start the OS
 
+include 'libraries/macros.asm'
 include 'libraries/terminal.asm'
 
 ; Code
 entry_addr:
     ; Initializing the stack
     mov esp, stackbottom
+    mov ebp, esp
 
     call terminal.clear
 
-    ; Display a message
-    push terminal.BLACK
-    push terminal.LIGHT_GREEN
-    push 85
-    push msglen
-    push msg
-    call terminal.print
-    sub esp, 20
+    ccall terminal.print, msg, msglen, 0, terminal.LIGHT_GREEN, terminal.BLACK
+    ccall terminal.print, msg, msglen, 85, terminal.LIGHT_GREEN, terminal.BLACK
+    ccall terminal.print, msg, msglen, 170, terminal.LIGHT_GREEN, terminal.BLACK
+    ccall terminal.print, msg, msglen, 255, terminal.LIGHT_GREEN, terminal.BLACK
 
     hlt ; halt
 
