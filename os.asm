@@ -29,14 +29,13 @@ include 'libraries/terminal.asm'
 entry_addr:
     ; Initializing the stack
     mov esp, stackbottom
-    mov ebp, esp
 
-    macros.call terminal.clear
+    call terminal.clear
 
-    macros.call terminal.print, msg, msglen, 0, terminal.LIGHT_GREEN, terminal.BLACK
-    macros.call terminal.print, msg, msglen, 85, terminal.LIGHT_GREEN, terminal.BLACK
-    macros.call terminal.print, msg, msglen, 170, terminal.LIGHT_GREEN, terminal.BLACK
-    macros.call terminal.print, msg, msglen, 255, terminal.LIGHT_GREEN, terminal.BLACK
+    call terminal.print, msg, msglen, 0, terminal.LIGHT_GREEN, terminal.BLACK
+    call terminal.print, msg, msglen, 85, terminal.LIGHT_GREEN, terminal.BLACK
+    call terminal.print, msg, msglen, 170, terminal.LIGHT_GREEN, terminal.BLACK
+    call terminal.print, msg, msglen, 255, terminal.LIGHT_GREEN, terminal.BLACK
 
     hlt ; halt
 

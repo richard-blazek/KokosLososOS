@@ -21,9 +21,7 @@ terminal.WIDTH = 80
 terminal.HEIGHT = 25
 
 ; Clear the screen
-terminal.clear:
-    push ecx
-
+procedure terminal.clear
     ; Each character has a text byte and a colour byte, so we multiply by two
     mov ecx, (terminal.WIDTH * terminal.HEIGHT * 2)
     .loop:
@@ -31,30 +29,17 @@ terminal.clear:
         sub ecx, 4
         jnz .loop
 
-    pop ecx
     ret
 
 
 ; Writes a string to a given position with a given formatting.
-; Arguments:
-;   - string
-;   - string length
-;   - position
-;   - text colour
-;   - background colour
-terminal.print:
-    pushad
-    mov eax, [esp+52] ; background colour
-    mov ebx, [esp+48] ; text colour
-    shl eax, 4
-    or eax, ebx       ; the colour code
+; Arguments: string, length, position, text colour, background colour
+procedure terminal.print, esi, ecx, edi, ebx, eax
+    shl eax, 4                      ; shift bg colour
+    or eax, ebx                     ; the colour code
 
-    mov edi, [esp+44] ; position
-    shl edi, 1        ; there are 2 bytes per character
-    add edi, terminal.VIDEO_MEMORY ; the address in the video memory
-
-    mov esi, [esp+36] ; string
-    mov ecx, [esp+40] ; string length
+    shl edi, 1                      ; there are 2 bytes per character
+    add edi, terminal.VIDEO_MEMORY  ; the address in the video memory
 
     .loop:
         mov dl, byte [esi + ecx - 1]
@@ -63,5 +48,4 @@ terminal.print:
         dec ecx
         jnz .loop
 
-    popad
     ret
