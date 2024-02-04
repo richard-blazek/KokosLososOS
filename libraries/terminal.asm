@@ -21,31 +21,47 @@ terminal.WIDTH = 80
 terminal.HEIGHT = 25
 
 ; Clear the screen
-procedure terminal.clear
-    ; Each character has a text byte and a colour byte, so we multiply by two
-    mov ecx, (terminal.WIDTH * terminal.HEIGHT * 2)
-    .loop:
-        mov dword [terminal.VIDEO_MEMORY + ecx - 4], 0
-        sub ecx, 4
-        jnz .loop
+; Arguments: background colour, text colour
+procedure terminal.clear, eax, ebx
+    ; only using the AX part of EAX;
+    ; lower byte for the text (zero), upper for the colour code
+    shl eax, 4  ; shifting the background colour
+    or eax, ebx ; obtaining the colour code
+    shl eax, 8  ; shifting it to the upper byte
 
+    mov ecx, 0
+    .loop:
+        mov word [terminal.VIDEO_MEMORY + ecx], ax
+        add ecx, 2
+        cmp ecx, (terminal.WIDTH * terminal.HEIGHT * 2)
+        jnz .loop
     ret
 
 
-; Writes a string to a given position with a given formatting.
-; Arguments: string, length, position, text colour, background colour
-procedure terminal.print, esi, ecx, edi, ebx, eax
-    shl eax, 4                      ; shift bg colour
-    or eax, ebx                     ; the colour code
+; Sets the new colour for the terminal
+; Arguments: background colour, text colour, position, length
+procedure terminal.paint, eax, ebx, edi, ecx
+    shl eax, 4                      ; shifting the background colour
+    or eax, ebx                     ; obtaining the colour code
+    shl edi, 1                      ; there are 2 bytes per character
+    add edi, terminal.VIDEO_MEMORY  ; the address in the video memory
 
+    .loop:
+        mov byte [edi + ecx * 2 - 1], al
+        dec ecx
+        jnz .loop
+    ret
+
+
+; Writes a string to a given position.
+; Arguments: string, length, position
+procedure terminal.print, esi, ecx, edi
     shl edi, 1                      ; there are 2 bytes per character
     add edi, terminal.VIDEO_MEMORY  ; the address in the video memory
 
     .loop:
         mov dl, byte [esi + ecx - 1]
         mov byte [edi + ecx * 2 - 2], dl
-        mov byte [edi + ecx * 2 - 1], al
         dec ecx
         jnz .loop
-
     ret
