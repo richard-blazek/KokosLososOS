@@ -30,19 +30,63 @@ entry_addr:
     ; Initializing the stack
     mov esp, stackbottom
 
-    call terminal.clear, terminal.BLACK, terminal.LIGHT_GREEN
+    call terminal.clear
 
-    call terminal.print, msg, msglen, 0
-    call terminal.print, msg, msglen, 85
-    call terminal.print, msg, msglen, 170
-    call terminal.print, msg, msglen, 255
-
-    call terminal.paint, terminal.LIGHT_RED, terminal.WHITE, 80, 80
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg + 3, msglen - 3
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
+    call terminal.puts, msg, msglen
 
     hlt ; halt
 
 ; Data section
-msg db 'Hello world!'
+msg db 'Hello world!', 10
 msglen = $ - msg
 
 load_end_addr:

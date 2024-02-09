@@ -1,67 +1,79 @@
-terminal.VIDEO_MEMORY = 0xB8000
-
-terminal.BLACK = 0
-terminal.BLUE = 1
-terminal.GREEN = 2
-terminal.CYAN = 3
-terminal.RED = 4
-terminal.MAGENTA = 5
-terminal.BROWN = 6
-terminal.LIGHT_GREY = 7
-terminal.DARK_GREY = 8
-terminal.LIGHT_BLUE = 9
-terminal.LIGHT_GREEN = 10
-terminal.LIGHT_CYAN = 11
-terminal.LIGHT_RED = 12
-terminal.LIGHT_MAGENTA = 13
-terminal.LIGHT_BROWN = 14
-terminal.WHITE = 15
-
-terminal.WIDTH = 80
-terminal.HEIGHT = 25
+terminal._video_memory = 0xB8000
+terminal._width = 80
+terminal._height = 25
+terminal._size = terminal._width * terminal._height * 2
+terminal._scroll = terminal._width * 5 * 2
+terminal._cursor dd 0
 
 ; Clear the screen
-; Arguments: background colour, text colour
-procedure terminal.clear, eax, ebx
-    ; only using the AX part of EAX;
-    ; lower byte for the text (zero), upper for the colour code
-    shl eax, 4  ; shifting the background colour
-    or eax, ebx ; obtaining the colour code
-    shl eax, 8  ; shifting it to the upper byte
-
+procedure terminal.clear
     mov ecx, 0
     .loop:
-        mov word [terminal.VIDEO_MEMORY + ecx], ax
+        mov dword [terminal._video_memory + ecx], 0x0A000A00 ; light green text on black background
+        add ecx, 4
+        cmp ecx, terminal._size
+        jnz .loop
+
+    mov dword [terminal._cursor], 0 ; reset cursor position
+    ret
+
+
+; Writes a character to the screen.
+; Arguments: the character
+procedure terminal.putc, eax
+    cmp eax, 10     ; if encountered the Line Feed character
+    je .newline
+    
+    .not_newline:
+        mov ecx, dword [terminal._cursor]
+        mov byte [terminal._video_memory + ecx], al
+        add dword [terminal._cursor], 2 ; 2 bytes per character
+        jmp .check_scroll
+    
+    .newline:
+        mov ecx, dword [terminal._cursor]
+        mov edx, 0
+        mov eax, ecx
+        mov ebx, 160
+        div ebx ; EDX:EAX divided by EBX, remainder put in EDX
+        sub ecx, edx
+        add ecx, 160
+        mov dword [terminal._cursor], ecx
+    
+    .check_scroll:
+        cmp dword [terminal._cursor], terminal._size
+        jl .finish
+
+        sub dword [terminal._cursor], terminal._scroll
+        mov ecx, 0
+    .scroll_loop:
+        mov ax, word [terminal._video_memory + terminal._scroll + ecx]
+        mov word [terminal._video_memory + ecx], ax
         add ecx, 2
-        cmp ecx, (terminal.WIDTH * terminal.HEIGHT * 2)
-        jnz .loop
-    ret
+        cmp ecx, (terminal._size - terminal._scroll)
+        jnz .scroll_loop
+
+    .clear_loop:
+        mov word [terminal._video_memory + ecx], 0x0A00
+        add ecx, 2
+        cmp ecx, terminal._size
+        jnz .clear_loop
+
+    .finish:
+        ret
 
 
-; Sets the new colour for the terminal
-; Arguments: background colour, text colour, position, length
-procedure terminal.paint, eax, ebx, edi, ecx
-    shl eax, 4                      ; shifting the background colour
-    or eax, ebx                     ; obtaining the colour code
-    shl edi, 1                      ; there are 2 bytes per character
-    add edi, terminal.VIDEO_MEMORY  ; the address in the video memory
-
+; Writes a string to the screen.
+; Arguments: string, length
+procedure terminal.puts, esi, ebx
+    add ebx, esi
+    mov eax, 0
     .loop:
-        mov byte [edi + ecx * 2 - 1], al
-        dec ecx
-        jnz .loop
-    ret
-
-
-; Writes a string to a given position.
-; Arguments: string, length, position
-procedure terminal.print, esi, ecx, edi
-    shl edi, 1                      ; there are 2 bytes per character
-    add edi, terminal.VIDEO_MEMORY  ; the address in the video memory
-
-    .loop:
-        mov dl, byte [esi + ecx - 1]
-        mov byte [edi + ecx * 2 - 2], dl
-        dec ecx
-        jnz .loop
-    ret
+        cmp esi, ebx
+        je .loop_end
+        mov al, byte [esi]
+        call terminal.putc, eax
+        inc esi
+        jmp .loop
+    .loop_end:
+        ret
